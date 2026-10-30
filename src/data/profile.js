@@ -12,8 +12,9 @@ export const profile = {
   name: 'Pedro Gustavo',
   years: 4,
   about: [
-    `Moro em Fortaleza e trabalho com Unity há 4 anos. Já fiz um jogo infantil que passou de 100 mil downloads, a realidade virtual e aumentada de uma exposição do Museu Goeldi e um app para configurar produtos em tempo real. Também fundei a ${links.studioLabel}, onde cuido da parte técnica.`,
-    'Na web, sou fullstack. Hoje programo em Java, Angular e React na Poncetech e já passei por Node.js e .NET, sempre do banco de dados até a tela. Pelas empresas em que trabalhei, entreguei projetos para Sebrae, Senai, Unimed Fortaleza, CVT e m7. Em paralelo, curso Ciência da Computação no IFCE.',
+    'Sou desenvolvedor de software e trabalho tanto com desenvolvimento web quanto com jogos e experiências interativas.',
+    `Tenho 4 anos de experiência com Unity, trabalhando em projetos que vão desde jogos até aplicações de realidade virtual e aumentada. Também fundei a ${links.studioLabel}, onde sou responsável pelo desenvolvimento técnico dos projetos.`,
+    'Na web, atuo como desenvolvedor fullstack, principalmente com Java, Angular e React, mas também tenho experiência com Node.js e .NET. Gosto de participar de diferentes etapas do desenvolvimento, desde a estrutura e as regras do sistema até a interface com o usuário.',
   ],
 }
 
@@ -183,7 +184,7 @@ export const modes = {
     stack: ['Java', 'C#', '.NET', 'Node.js', 'Python', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Angular', 'APIs REST', 'SQL', 'PostgreSQL', 'MongoDB', 'Azure', 'Git'],
     stats: [
       { value: 6, label: 'empresas' },
-      { value: 5, label: 'clientes atendidos' },
+      { value: 10, suffix: '+', label: 'projetos entregues' },
       { value: 4, label: 'anos programando' },
     ],
   },
