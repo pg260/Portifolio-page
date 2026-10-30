@@ -48,7 +48,8 @@ export function About() {
             </RevealItem>
             <RevealItem>
               <h3 className="mb-4 text-small text-muted">Stack · {data.label}</h3>
-              <PhysicsChips items={data.stack} label={`Stack ${data.label}`} />
+              {/* gravidade zero só no modo Jogos (espaço); no Fullstack os chips caem e se empilham */}
+              <PhysicsChips items={data.stack} label={`Stack ${data.label}`} float={mode === 'games'} />
             </RevealItem>
           </Reveal>
         </div>
