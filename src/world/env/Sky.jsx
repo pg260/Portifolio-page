@@ -54,9 +54,9 @@ export function Sky({ mode, reduced }) {
   const size = useThree((s) => s.size)
   const target = useMemo(() => {
     const m = MODE_COLORS[mode]
-    // no modo Jogos as nebulosas e os astros do Cosmos fazem a cor; o céu fica mais escuro para eles aparecerem
+    // os marcos fazem a cor (Cosmos no Jogos, Infra no Fullstack); o céu fica mais escuro para eles aparecerem
     const games = mode === 'games'
-    return { a: new THREE.Color(m.accent), b: new THREE.Color(m['accent-2']), grid: games ? 0.25 : 1, wash: games ? 0.4 : 1 }
+    return { a: new THREE.Color(m.accent), b: new THREE.Color(m['accent-2']), grid: games ? 0.25 : 1, wash: games ? 0.4 : 0.55 }
   }, [mode])
   const uniforms = useMemo(
     () => ({

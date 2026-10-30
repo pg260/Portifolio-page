@@ -2,9 +2,9 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { MODE_COLORS } from '../../lib/tokens.js'
-import { world } from '../store.js'
 import { buildPaths } from '../paths.js'
 import { SNOISE } from '../glsl.js'
+import { billboardVertex, glowFragment, placeOnPath, premultiplied, rng, smooth, useFade, usePrecompile } from './landmarks.js'
 
 /*
  * Viagem do modo Jogos: marcos do espaço que a câmera encontra entre as estações (DESIGN.md §8).
@@ -25,61 +25,6 @@ const STAR_B = '#ff9ec4'
 /** Galáxia: miolo quente, braços puxando para o rosa, o violeta e o azul. */
 const GALAXY_CORE = '#ffd9a0'
 const GALAXY_ARMS = [games['accent-2'], '#8b5cf6', '#4f7dff']
-
-const smooth = (a, b, x) => {
-  const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
-  return t * t * (3 - 2 * t)
-}
-
-/** Gerador pseudoaleatório com semente (mulberry32): o céu é o mesmo a cada visita. */
-function rng(seed) {
-  let a = seed >>> 0
-  return () => {
-    a = (a + 0x6d2b79f5) | 0
-    let t = Math.imul(a ^ (a >>> 15), 1 | a)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-
-/* ---------- posicionamento pela tela ---------- */
-
-const probe = new THREE.PerspectiveCamera()
-const pPos = new THREE.Vector3()
-const pLook = new THREE.Vector3()
-const pFwd = new THREE.Vector3()
-
-/** Ponto do mundo que aparece em `ndc` (−1..1) quando a câmera está na coordenada `s` da trilha, `depth` unidades à frente. */
-function placeOnPath(path, s, [nx, ny], depth, aspect, fov) {
-  path.sample(s, pPos, pLook)
-  probe.fov = fov
-  probe.aspect = aspect
-  probe.position.copy(pPos)
-  probe.lookAt(pLook)
-  probe.updateProjectionMatrix()
-  probe.updateMatrixWorld()
-  const dir = new THREE.Vector3(nx, ny, 0.5).unproject(probe).sub(pPos).normalize()
-  probe.getWorldDirection(pFwd)
-  return pPos.clone().addScaledVector(dir, depth / dir.dot(pFwd))
-}
-
-/**
- * Visibilidade de um marco: some com o modo Fullstack (fade de 0,25s), acende quando fica pronto (`ready`)
- * e só aparece quando a câmera passa de `appear[0]` (cheio em `appear[1]`), como se estivesse longe demais
- * para ser visto antes. Com `leave` apaga de novo entre `leave[0]` e `leave[1]`, para não ficar atrás do texto
- * das estações seguintes.
- */
-function useFade(active, reduced, appear, leave) {
-  const st = useRef({ mode: 0 })
-  return (dt, ready = true) => {
-    const k = reduced ? 1 : Math.min(1, dt * 4)
-    st.current.mode += ((active && ready ? 1 : 0) - st.current.mode) * k
-    const s = world.camera.station
-    const at = appear ? smooth(appear[0], appear[1], s) : 1
-    const gone = leave ? 1 - smooth(leave[0], leave[1], s) : 1
-    return st.current.mode * at * gone
-  }
-}
 
 /* ---------- nebulosa ---------- */
 
@@ -238,19 +183,6 @@ function useNebulaTexture(seed, size) {
   return map
 }
 
-/** Quad que sempre encara a câmera; a escala do objeto vira largura e altura. */
-const billboardVertex = /* glsl */ `
-  uniform float uSpin;
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    vec4 mv = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
-    float c = cos(uSpin), s = sin(uSpin);
-    vec2 q = vec2(c * position.x - s * position.y, s * position.x + c * position.y);
-    mv.xy += q * vec2(length(modelMatrix[0].xyz), length(modelMatrix[1].xyz));
-    gl_Position = projectionMatrix * mv;
-  }
-`
 const veilFragment = /* glsl */ `
   uniform sampler2D uMap;
   uniform float uOpacity;
@@ -261,16 +193,6 @@ const veilFragment = /* glsl */ `
     gl_FragColor = vec4(t.rgb * uBright, t.a) * uOpacity;
   }
 `
-/** Mistura pré-multiplicada: a emissão soma, a poeira escurece o que está atrás. */
-const premultiplied = {
-  blending: THREE.CustomBlending,
-  blendSrc: THREE.OneFactor,
-  blendDst: THREE.OneMinusSrcAlphaFactor,
-  transparent: true,
-  depthWrite: false,
-  toneMapped: false,
-}
-
 /** Nebulosa de fundo: uma tela pintada (textura gerada) encarando a câmera, girando bem devagar. */
 export function NebulaVeil({ position, width, height, seed, resolution = 1024, brightness = 1, active, reduced, appear, leave }) {
   const group = useRef()
@@ -556,22 +478,6 @@ const starFragment = /* glsl */ `
     gl_FragColor = vec4(uColor * (2.4 + g * 0.5) * limb * uOpacity, uOpacity);
   }
 `
-const glowFragment = /* glsl */ `
-  uniform vec3 uColor;
-  uniform float uOpacity;
-  uniform float uTime;
-  uniform float uRays;
-  varying vec2 vUv;
-  void main() {
-    vec2 c = vUv - 0.5;
-    float r = length(c) * 2.0;
-    float a = atan(c.y, c.x);
-    float halo = pow(max(1.0 - r, 0.0), 2.6);
-    // raios da coroa: finos, girando devagar
-    float rays = pow(abs(sin(a * 6.0 + uTime * 0.05)), 18.0) * pow(max(1.0 - r, 0.0), 1.4) * uRays;
-    gl_FragColor = vec4(uColor * (halo * 1.3 + rays * 0.8) * uOpacity, 1.0);
-  }
-`
 
 /** Uma estrela: esfera com granulação e o brilho da coroa por cima; `opacity` é o ref de fade do sistema. */
 function StarBody({ radius, color, reduced, opacity }) {
@@ -755,12 +661,14 @@ export function Cosmos({ active, reduced, narrow, galaxyCount }) {
       galaxy: { position: at(3, [0.5, 0.3], 110), radius: 30 * Math.max(0.45, fit) },
     }
   }, [narrow, width, height, fov])
+  const root = useRef()
+  usePrecompile(root, galaxyCount)
   return (
-    <>
+    <group ref={root}>
       <GasGiant {...marks.giant} sun={marks.star.position} active={active} reduced={reduced} appear={[0.35, 0.9]} />
       <BinaryStar {...marks.star} active={active} reduced={reduced} appear={[1.2, 1.8]} />
       <Nebula position={marks.cloud.position} {...PASS_CLOUD} active={active} reduced={reduced} appear={[2.05, 2.25]} leave={[2.6, 2.85]} />
       <Galaxy {...marks.galaxy} count={galaxyCount} active={active} reduced={reduced} appear={[2.2, 2.9]} />
-    </>
+    </group>
   )
 }

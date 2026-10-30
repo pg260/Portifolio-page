@@ -144,11 +144,14 @@ aos 380ms o conteúdo troca por baixo e o 3D explode (pulso 1.6, quatro ondas, k
 para o canto superior direito com um flash `ink` (0.85 → 0 em 450ms); durante tudo `main` e `header` tremem (`mode-shake`) e os
 elementos `[data-glitch]` (h1, h2, brand, e-mail) sofrem RGB split. Com reduced motion a troca é instantânea.
 
-**Física no Sobre:** chips de stack são corpos rígidos (matter-js, gravidade 1.3, chanfro = altura/2, restituição 0.45) num
-contêiner de 280/320px; arrastar e atirar com ponteiro fino, botão "Sacudir" para toque e teclado; trocar de modo derruba o novo
-conjunto. **Campo reativo no Contato:** grade de esferas instanciadas (passo 0.42) que foge do cursor com mola crítica e acende em
-`accent`/`accent-2` (canvas 3D próprio, `demand` fora da tela; as bordas somem por `mask-image` 20%/80%, sem faixas cor de `canvas`,
-para o mundo aparecer por trás). **Fundo de Trabalhos:** canvas 2D com estrelas que fogem do cursor
+**Física no Sobre:** chips de stack são corpos rígidos (matter-js, chanfro = altura/2) num contêiner de 280/320px; arrastar e
+atirar com ponteiro fino, botão "Sacudir" para toque e teclado. **Jogos (espaço): gravidade zero**, restituição 0.9: flutuam a
+~20px/s, quicam nas bordas e uns nos outros e balançam até ±0,25 rad em volta da horizontal (choques e arremessos giram o chip,
+depois ele se endireita); "Sacudir" dá um empurrão de 6–12px por passo em direção aleatória; trocar para Jogos faz o conjunto
+nascer espalhado dentro da caixa. **Fullstack: gravidade 1.2**, restituição 0.35: os chips caem de cima da caixa e se empilham
+(o teto entra 1,4s depois); "Sacudir" joga a pilha para cima. Nos dois, o botão fica com opacidade 0.4 quando um chip passa por
+trás dele (colisão exata com a área do botão + 4px); volta inteiro no foco e no hover, menos enquanto se arrasta um chip. **Contato** não tem interação própria: o fundo é o mundo 3D (a galáxia no Jogos, o globo de rede no Fullstack), sem nada
+por cima. **Fundo de Trabalhos:** canvas 2D com estrelas que fogem do cursor
 (Jogos) ou rede de nós atraídos pelo cursor (Fullstack). **Cards de jogo:** cópia da imagem fatiada em glitch (500ms, steps) e
 varredura de scanline no hover. **Rastro do cursor:** partículas na cor do modo (canvas 2D, `screen`).
 
@@ -226,7 +229,8 @@ período e chips. Logo quando existir (`public/images/empresas/`), senão o nome
 **Botão primário** — `accent`, `on-accent`, 48px, `radius-sm`, magnético, hover com brilho `glow`. **Secundário** — borda `hairline-strong`,
 `ink`, hover `surface-elevated`. **Ícone** — 44px. Todos com foco visível.
 
-**Contato** — e-mail em `contact`, sublinhado `accent` em hover; três botões secundários. **Rodapé** — caption muted.
+**Contato** — e-mail em `contact`, sublinhado `accent` em hover (texto selecionável); três botões secundários; sem campo
+interativo, o fundo é o mundo 3D. **Rodapé** — caption muted.
 
 ## 8. Imagens e mundo 3D
 
@@ -242,9 +246,10 @@ Jogos em `public/images/` (WebP + SVG), alt descritivo, `loading="lazy"`, dimens
 | Estações | 0 hero, 1 trabalhos, 2 sobre, 3 contato. Em cada seção a câmera fica parada nos primeiros 12% e voa (smootherstep) na última ≤ 0,9 viewport antes da próxima âncora |
 | Trilhas | Catmull-Rom centrípeta por modo, com waypoints entre estações. Jogos sobe e serpenteia pelo cinturão de asteroides; Fullstack desce rente ao grid de dados |
 | Câmera | amortecimento 0.28 (posição) / 0.32 (alvo); parallax de ponteiro fora do hero (0.45 x, 0.25 y); roll pela velocidade lateral até ±0.12 rad; kick na troca de modo (1.8 unidades + tremor, decai 1.6/s) |
-| Céu | nebulosa em shader de tela cheia que gira com yaw/pitch da câmera, cores do modo, grid 0.25 (Jogos) / 1 (Fullstack); manchas de cor a 40% no Jogos (lá a cor vem das nebulosas e dos astros) e 100% no Fullstack |
+| Céu | nebulosa em shader de tela cheia que gira com yaw/pitch da câmera, cores do modo, grid 0.25 (Jogos) / 1 (Fullstack); manchas de cor a 40% no Jogos e 55% no Fullstack (a cor vem dos marcos: nebulosas e astros no Jogos, infraestrutura no Fullstack) |
 | Nebulosa do hero (Jogos) | textura pintada uma vez na GPU (half float, 1024px; 512 em telas < 1024px) em dois passos com `compileAsync`: campos de ruído, depois luz de um aglomerado no miolo (marcha de 8 amostras: bordas viradas para a luz acendem, costas na sombra). Paleta: corpo `#3b6cf6` → `#8b5cf6` → `accent-2`, borda acesa `accent-2` → `accent` → `#ffe2b8`, poeira escura que tapa o fundo. Billboard de 95 × 70 unidades a 130 da câmera, atrás da Terra (celular: 60 × 48, brilho 0.8); gira 0,004 rad/s; acende quando a textura fica pronta e apaga entre as estações 0.35 e 0.85 |
 | Marcos da viagem (Jogos) | ancorados na tela por estação (posição NDC + profundidade), sempre longe do texto: gigante gasoso com anéis em Trabalhos (−0.72, −0.32; raio 8, faixas `#f1dcb7` `#d29a62` `#9c4f2e` `#5a3a4a`, atmosfera `#ffb27a`, sombra no anel); sistema binário em Sobre (0.58, 0.52; `#fff1d6` e companheira `#ff9ec4`, coroa com raios); nuvem de 18 billboards que a câmera atravessa entre Sobre e Contato (só entre as estações 2.05 e 2.85, brilho 0.1–0.18 por billboard); galáxia espiral de partículas à direita no Contato (0.5, 0.3; três braços, miolo `#ffd9a0`). Raios encolhem em telas em retrato. Somem no Fullstack (fade 0,25s) |
+| Marcos da viagem (Fullstack) | "infraestrutura viva", tudo em vidro escuro `#07131a` com arestas e luzes em `accent`/`accent-2`/`#e6fdff` acima do limiar do bloom, névoa `#10303a`; nada de caixa chapada. **Skyline** no horizonte do hero (z −140 a −260): prédios de janelas em grade com colunas de dados subindo ou pele de vidro com lajes e varreduras, recuos e antenas piscando, código caindo em colunas (células de 1.6, duas gotas por coluna) pela maior parte das fachadas em `accent-2` com a cabeça em `#e6fdff`; quase nenhum à esquerda (título), sobe atrás da janela do minigame; o topo nunca passa de y 0.55 NDC (tablet: 0.3, baixo e à direita; celular: sem skyline); apaga entre 0.35 e 0.85. **Datacenter** em Trabalhos: fileiras de racks de vidro (1.1 × 4.2 × 1.0) dos dois lados da trilha (estação 0.58 a 1.68), unidades de servidor com LEDs piscando e varredura de atividade, arcos de luz nos vãos e bandejas de cabos com pulsos; aparece 0.25–0.6, apaga 1.7–2.0 (brilho 0.6 em telas < 1024px). **Núcleo de banco de dados** em Sobre (0.6, 0.5; raio 2.4; telas estreitas: ao lado do título, 0.55, 0.62, raio 1.1): quatro discos de vidro com blocos de dados girando, anéis tracejados e espiral de partículas entrando e saindo; aparece 1.3–1.85, apaga 2.2–2.45. **Paredões de código** no fundo, aditivos e com bordas que somem no escuro (62% chuva Matrix densa com duas gotas por coluna, 38% listagens de código numeradas subindo uma linha por vez com a linha atual acesa; caracteres maiores quanto mais longe): um cânion dos dois lados da viagem de Trabalhos em diante (paredões de 22–38 × 40–74 a 20–34 unidades da trilha, de z −14 a −250, voltados para ela e um pouco para quem chega) e dois de frente para a câmera no fundo de cada estação (hero: atrás do skyline a 320–340; demais: 150–180). Parada numa estação, uma máscara das zonas de texto (borrada, 96 × 64 por estação) apaga 96% deles atrás do texto; nos voos aparecem inteiros. **Chuva de código** (Matrix) pela viagem inteira: 440 colunas de glifos (atlas 8 × 8, mono 600) que sempre encaram a câmera, rastro em `accent` (30% em `accent-2`) com a cabeça em `#e6fdff` acima do bloom, 6–16 células/s; metade perto das estações (colunas curtas, 6–20 células) e metade pelos voos (10–36); somem perto da câmera e depois de 85 unidades. **Painéis de código** de vidro quase opaco (90%) com semáforo e título: trechos sendo digitados (0,035s por caractere, cursor em bloco piscando, 5s parado, apaga e recomeça; `modes.fullstack.world.code`: Java, React, SQL, Node.js, C#, Angular, Git, REST, TypeScript, Docker, CSS, Spring, CI, Jest) alternados com terminais de log rolando com a linha nova acesa (`world.logs`: api, deploy, banco, testes); reordenados de trás para frente a cada frame e somem perto da câmera. Onde ficam: dos lados do voo hero → Trabalhos, pendurados no alto do corredor de racks, monitores na meia altura dos racks (acendem quando a parada de Trabalhos acaba), no voo para o Sobre, um túnel de 36 entre Sobre e Contato (estação 2.12 a 2.92) e parados nos vãos livres de cada estação em duas camadas: perto (até 2 em Trabalhos e Sobre, 3 no Contato; largura 24% da tela, 240–460px, a 13–20 unidades) e janelas menores ao fundo (até 3 por estação, hero incluído; 55% disso, mínimo 150px, a 26–36 unidades). **Zonas de texto:** a página mede onde cada texto passa durante a parada de cada estação (`world.zones`, da chegada até o voo começar, mais a nav; somados a janela do minigame, o núcleo e o globo); colunas de chuva e painéis parados que cairiam em cima delas ficam de fora, então nas paradas o código só ocupa os vãos e nos voos passa por todo lado. **Globo de rede** no Contato (0.5, 0.12; raio 8): terra em 16000 pontos, arcos de Fortaleza para 10 cidades com pacotes correndo, marcador de Fortaleza com onda; telas estreitas: raio 3.4 no vão entre os links e o rodapé (celular 0.35, −0.45; tablet 0.62, −0.45) e acende mais tarde (2.55–2.95). Os shaders compilam quando o navegador fica ocioso depois do load (`usePrecompile`, também no Jogos), para a primeira passagem por cada marco não travar. Somem no Jogos (fade 0,25s) |
 | Estrelas | quads instanciados de 1,6–5,2px que viram rastro na direção do voo (exposição 0.05s, máx. 10 unidades); 2/3 num tubo em volta das trilhas; aditivas, sem tone mapping, tom puxado para `accent`/`accent-2` |
 | Asteroides (Jogos) | 3 rochas geradas (fbm + 5 crateras com borda, normais suaves), textura da Lua triplanar com tom `#c9bca8`; ao longo da trilha fora do hero; encolhem rente à câmera |
 | Grid de dados (Fullstack) | plano 240×240 em y −6.5, linhas a cada 2 e 10 unidades com pacotes correndo, some com a distância |
@@ -252,14 +257,15 @@ Jogos em `public/images/` (WebP + SVG), alt descritivo, `loading="lazy"`, dimens
 
 **Níveis de qualidade** (detect-gpu, benchmarks servidos de `/gpu-benchmarks`; `?quality=high|mid|low|off` força):
 
-| Nível | dpr | Estrelas | Rochas | Galáxia |
-|---|---|---|---|---|
-| high | 1–1.75 | 9000 | 140 | 40000 |
-| mid | 1–1.25 | 5500 | 90 | 24000 |
-| low | 1 | 3000 | 45 | 12000 |
-| off | sem WebGL: fundo estático no hero | — | — | — |
+| Nível | dpr | Estrelas | Rochas | Galáxia | Infra |
+|---|---|---|---|---|---|
+| high | 1–1.75 | 9000 | 140 | 40000 | 1 |
+| mid | 1–1.25 | 5500 | 90 | 24000 | 0.75 |
+| low | 1 | 3000 | 45 | 12000 | 0.5 |
+| off | sem WebGL: fundo estático no hero | — | — | — | — |
 
-Telas < 1024px usam 60% das estrelas, rochas e partículas da galáxia. O monitor de fps desce um nível quando degrada; se cair a `off`, tenta `low` uma vez
+Infra é a fração das contagens dos marcos do Fullstack (150 prédios, 600 partículas do núcleo, 440 colunas de chuva, painéis dos voos
+com mínimo de 60%, paredões do cânion com mínimo de 55%, 16000 pontos do globo); no celular ela cai a 65%. Telas < 1024px usam 60% das estrelas, rochas e partículas da galáxia. O monitor de fps desce um nível quando degrada; se cair a `off`, tenta `low` uma vez
 após 12s.
 
 **Enquadramento do hero:** o minigame é posicionado pela tela, não pelo mundo. Desktop: centro em 72% da largura e 47% da altura,

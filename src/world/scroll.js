@@ -16,6 +16,41 @@ export function measureAnchors() {
   })
   // âncoras sempre crescentes (seções finais podem cair no limite do scroll)
   for (let i = 1; i < world.anchors.length; i++) world.anchors[i] = Math.max(world.anchors[i], world.anchors[i - 1] + 1)
+  measureZones()
+}
+
+const TEXT = 'main :is(h1, h2, h3, h4, p, li, a, button, dl, [role=group], [role=tablist]), #inicio span, footer :is(p, a, button)'
+
+/**
+ * Zonas de texto por estação (world.zones): enquanto a câmera fica parada numa estação a página ainda rola
+ * (os primeiros 12% da trilha), então cada elemento ocupa a faixa entre onde está na chegada e onde está
+ * quando o voo começa. A nav fixa entra em todas.
+ */
+function measureZones() {
+  const vw = window.innerWidth
+  const vh = window.innerHeight
+  const anchors = world.anchors
+  const nav = document.querySelector('header')?.getBoundingClientRect()
+  const els = [...document.querySelectorAll(TEXT)]
+    .map((el) => {
+      const r = el.getBoundingClientRect()
+      return { x0: r.left, x1: r.right, top: r.top + window.scrollY, bottom: r.bottom + window.scrollY, w: r.width, h: r.height }
+    })
+    .filter((r) => r.w > 0 && r.h > 0)
+  const ndc = (x0, y0, x1, y1) => [(x0 / vw) * 2 - 1, 1 - (y1 / vh) * 2, (x1 / vw) * 2 - 1, 1 - (y0 / vh) * 2]
+  world.zones.list = anchors.map((a, i) => {
+    const b = anchors[i + 1]
+    // mesma conta do stationCoord: o voo ocupa a última tela antes da próxima âncora
+    const dwell = b === undefined ? 0 : Math.max(0, b - Math.min(vh * 0.9, (b - a) * 0.75) - a)
+    const list = nav ? [ndc(0, 0, vw, nav.bottom)] : []
+    for (const r of els) {
+      const y0 = Math.max(0, r.top - a - dwell)
+      const y1 = Math.min(vh, r.bottom - a)
+      if (y1 > y0) list.push(ndc(r.x0, y0, r.x1, y1))
+    }
+    return list
+  })
+  world.zones.version++
 }
 
 const smootherstep = (t) => t * t * t * (t * (t * 6 - 15) + 10)

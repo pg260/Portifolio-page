@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { MODE_COLORS } from '../../lib/tokens.js'
 
-const FLOOR_Y = -6.5
+export const FLOOR_Y = -6.5
 
 const vertex = /* glsl */ `
   varying vec3 vW;

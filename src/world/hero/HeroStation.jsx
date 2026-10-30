@@ -65,6 +65,20 @@ function heroPlacement(width, height, fov, narrow) {
 }
 
 /**
+ * Onde a janela do Fullstack fica na tela, em NDC [x0, y0, x1, y1] (com 24px de folga), para os marcos
+ * do fundo passarem longe dela. No celular é a faixa livre inteira em que ela se encaixa.
+ */
+export function heroWindowRect(width, height, fov, narrow) {
+  const phone = narrow && width < 768
+  const { px, y } = heroPlacement(width, height, fov, narrow)
+  const box = phone
+    ? [16, world.view.free.top, width - 16, Math.min(height, world.view.free.bottom)]
+    : [width * (narrow ? 0.7 : 0.72) - (WIN_W * px * 0.46), y - WIN_H.full * px * 0.46, width * (narrow ? 0.7 : 0.72) + WIN_W * px * 0.46, y + WIN_H.full * px * 0.46]
+  const [x0, y0, x1, y1] = [box[0] - 24, box[1] - 24, box[2] + 24, box[3] + 24]
+  return [(x0 / width) * 2 - 1, 1 - (y1 / height) * 2, (x1 / width) * 2 - 1, 1 - (y0 / height) * 2]
+}
+
+/**
  * A janela do Fullstack é chapada e tem texto, então não usa o tamanho da Terra. No celular ela se
  * encaixa na faixa livre entre o HUD e o título (medida pelo Hero, `world.view.free`): escala pela
  * altura e pela largura disponíveis e se centra na faixa; sem faixa útil (celulares baixos, em que o

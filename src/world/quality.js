@@ -2,12 +2,12 @@ import { getGPUTier } from 'detect-gpu'
 
 /**
  * Níveis de qualidade do mundo 3D. "off" = sem WebGL (fundo estático).
- * dpr: resolução; stars/rocks/galaxy: densidade (partículas da galáxia); post: pós-processamento (full = bloom + aberração + vinheta).
+ * dpr: resolução; stars/rocks/galaxy: densidade (partículas da galáxia); infra: fração das contagens dos marcos do Fullstack; post: pós-processamento (full = bloom + aberração + vinheta).
  */
 export const QUALITY = {
-  high: { dpr: [1, 1.75], stars: 9000, rocks: 140, galaxy: 40000, post: 'full' },
-  mid: { dpr: [1, 1.25], stars: 5500, rocks: 90, galaxy: 24000, post: 'bloom' },
-  low: { dpr: 1, stars: 3000, rocks: 45, galaxy: 12000, post: null },
+  high: { dpr: [1, 1.75], stars: 9000, rocks: 140, galaxy: 40000, infra: 1, post: 'full' },
+  mid: { dpr: [1, 1.25], stars: 5500, rocks: 90, galaxy: 24000, infra: 0.75, post: 'bloom' },
+  low: { dpr: 1, stars: 3000, rocks: 45, galaxy: 12000, infra: 0.5, post: null },
 }
 export const TIERS = ['high', 'mid', 'low', 'off']
 export const lowerTier = (tier) => TIERS[Math.min(TIERS.length - 1, TIERS.indexOf(tier) + 1)]

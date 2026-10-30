@@ -13,6 +13,7 @@ import { Starfield } from './env/Starfield.jsx'
 import { AsteroidField } from './env/AsteroidField.jsx'
 import { Cosmos } from './env/Cosmos.jsx'
 import { DataGrid } from './env/DataGrid.jsx'
+import { Infra } from './env/Infra.jsx'
 import { HeroStation } from './hero/HeroStation.jsx'
 
 /** Pós-processamento. "full": bloom + aberração cromática ligada à velocidade da câmera + vinheta. */
@@ -78,6 +79,7 @@ function Scene({ tier, mode, reduced, revealed, onDegrade }) {
       </Suspense>
       <Cosmos active={mode === 'games'} reduced={reduced} narrow={narrow} galaxyCount={narrow ? Math.round(q.galaxy * 0.6) : q.galaxy} />
       <DataGrid active={mode === 'fullstack'} reduced={reduced} />
+      <Infra active={mode === 'fullstack'} reduced={reduced} narrow={narrow} detail={q.infra} />
       <HeroStation mode={mode} revealed={revealed} reduced={reduced} narrow={narrow} c={c} />
       <CameraRig mode={mode} reduced={reduced} narrow={narrow} />
       <Monitor onDegrade={onDegrade} reduced={reduced} />

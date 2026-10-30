@@ -12,6 +12,12 @@ export const world = {
   /** scrollY em que a câmera chega em cada estação (mesma ordem de STATIONS) */
   anchors: [0],
   /**
+   * Onde há texto na tela em cada estação (mesma ordem de STATIONS): retângulos [x0, y0, x1, y1] em NDC
+   * (−1..1, y para cima) cobrindo tudo o que passa pela tela enquanto a câmera está parada ali. Os marcos
+   * decorativos se encaixam fora deles. `version` muda a cada medida.
+   */
+  zones: { list: [], version: 0 },
+  /**
    * hero: fração do hero ainda visível (1 = topo da página, 0 = fora da tela).
    * free: faixa vertical livre do hero (px), entre o rótulo do HUD e o bloco de texto; o minigame do
    * celular se encaixa nela.
