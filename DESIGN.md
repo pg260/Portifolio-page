@@ -11,7 +11,8 @@ Tokens em inglês, texto em PT-BR. A v1 (grafite quieto, uma Scene View) foi des
 ## 1. Identidade
 
 Landing page de uma página com **dois modos**: **Jogos** (Unity, C#, mobile, VR/AR, Glitch Fish Studio) e
-**Fullstack** (sistemas web para IFCE, Sebrae, Senai, Unimed Fortaleza, CVT Fortaleza, m7 Soluções Financeiras).
+**Fullstack** (empresas em que trabalhou: Poncetech, Agroplay Kids, Bugaboo Studio, ReBuild! Studio, NeoCode Solutions,
+IFCE; e os clientes atendidos por meio delas: Sebrae, Senai, Unimed Fortaleza, CVT Fortaleza, m7 Soluções Financeiras).
 Quem olha: recrutadores de estúdios e de empresas de software, clientes. O trabalho da página é impressionar
 em segundos e deixar claro que Pedro entrega nas duas frentes.
 
@@ -85,7 +86,7 @@ Linhas: parágrafos `max-w-[60ch]`, lead `max-w-[36ch]`, h1 `max-w-[12ch]`. Sent
 - Container `max-w-[1240px]`, gutters `px-5` (360px) → `px-8` (768px) → `px-12` (1280px). Grid de 12 colunas em `lg`.
 - Nav fixa 72px, `surface` a 80% com `backdrop-blur-md` (blur permitido na v2 só na nav e no menu mobile).
 - Hero `min-h-[100svh]`, cena 3D absoluta ocupando o hero inteiro; texto à esquerda (colunas 1–7), HUD nos quatro cantos (`caption`), interruptor grande abaixo do lead.
-- Trabalhos: jogos agrupados pelo estúdio em que foram feitos, um card por estúdio (Bugaboo, Agroplay Kids, ReBuild!), em `md:grid-cols-2` abaixo de `lg` e em pilha sticky no desktop; empresas em `md:grid-cols-2 xl:grid-cols-3` (6 cards 4:3).
+- Trabalhos: jogos agrupados pelo estúdio em que foram feitos, um card por estúdio (Bugaboo, Agroplay Kids, ReBuild!), em `md:grid-cols-2` abaixo de `lg` e em pilha sticky no desktop; no Fullstack, dois níveis: as empresas em que trabalhou em `sm:grid-cols-2 xl:grid-cols-3` (6 cards 4:3) e, abaixo, "Clientes atendidos" em `grid-cols-2 md:grid-cols-3 xl:grid-cols-5` (5 cards compactos).
 - Sobre: texto (colunas 1–6) e chips + contadores (colunas 7–12).
 - Ritmo vertical: `py-20` mobile, `py-28` md, `py-36` lg. Espaçamento: 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 144.
 - Breakpoints: 640, 768, 1024, 1280. Testar 360, 390, 768, 1024, 1440, 1920. Alvos ≥ 44px.
@@ -144,18 +145,18 @@ aos 380ms o conteúdo troca por baixo e o 3D explode (pulso 1.6, quatro ondas, k
 para o canto superior direito com um flash `ink` (0.85 → 0 em 450ms); durante tudo `main` e `header` tremem (`mode-shake`) e os
 elementos `[data-glitch]` (h1, h2, brand, e-mail) sofrem RGB split. Com reduced motion a troca é instantânea.
 
-**Física no Sobre:** chips de stack são corpos rígidos (matter-js, chanfro = altura/2) num contêiner de 280/320px; arrastar e
+**Física no Sobre:** chips de stack são corpos rígidos (matter-js, chanfro = altura/2) num contêiner de 300/320px; arrastar e
 atirar com ponteiro fino, botão "Sacudir" para toque e teclado. **Jogos (espaço): gravidade zero**, restituição 0.9: flutuam a
 ~20px/s, quicam nas bordas e uns nos outros e balançam até ±0,25 rad em volta da horizontal (choques e arremessos giram o chip,
 depois ele se endireita); "Sacudir" dá um empurrão de 6–12px por passo em direção aleatória; trocar para Jogos faz o conjunto
 nascer espalhado dentro da caixa. **Fullstack: gravidade 1.2**, restituição 0.35: os chips caem de cima da caixa e se empilham
-(o teto entra 1,4s depois); "Sacudir" joga a pilha para cima. Nos dois, o botão fica com opacidade 0.4 quando um chip passa por
+(o teto fecha a caixa quando todos já caíram dentro dela); "Sacudir" joga a pilha para cima. Nos dois, o botão fica com opacidade 0.4 quando um chip passa por
 trás dele (colisão exata com a área do botão + 4px); volta inteiro no foco e no hover, menos enquanto se arrasta um chip. **Contato** não tem interação própria: o fundo é o mundo 3D (a galáxia no Jogos, o globo de rede no Fullstack), sem nada
 por cima. **Fundo de Trabalhos:** canvas 2D com estrelas que fogem do cursor
 (Jogos) ou rede de nós atraídos pelo cursor (Fullstack). **Cards de jogo:** cópia da imagem fatiada em glitch (500ms, steps) e
 varredura de scanline no hover. **Rastro do cursor:** partículas na cor do modo (canvas 2D, `screen`).
 
-**Cards de empresa:** viram no clique/Enter (rotateY 180°, spring 160/20) mostrando descrição, período e stack; "ver mais" aparece no hover.
+**Cards de empresa:** viram no clique/Enter (rotateY 180°, spring 160/20) mostrando descrição, stack e os clientes atendidos por ela; "ver mais" aparece no hover.
 **Chips de stack:** sobem 3px e escalam 1,04 no hover. **Brand na nav:** scramble de 420ms no hover e ao trocar de modo.
 **Rodapé:** "voltar ao topo" com texto circular girando (18s, linear) e seta magnética.
 
@@ -221,8 +222,10 @@ projeto: pill de categoria, meta em small muted (downloads), título h4, descri�
 aba faz crossfade da capa (500ms) e do texto (saída 120ms, entrada 300ms); sem animação com reduced motion. Estúdio com um projeto
 não mostra abas. Tilt ±8° e glow que segue o cursor. Índice "01" só aqui, porque é uma seleção de fases.
 
-**Card de empresa** — `radius-lg`, `surface`, nome em display 600 grande, setor em small muted, no hover/foco expande com descrição,
-período e chips. Logo quando existir (`public/images/empresas/`), senão o nome em tipografia.
+**Card de empresa** — `radius-lg`, `surface`, logo (44px de altura e até 160px de largura, então os compridos ficam mais baixos; `ink`, vira `accent` no hover) ou, sem logo, ícone em `accent-soft` e período no topo, nome em display 600 grande e cargo em small muted;
+no verso, descrição, chips e "Clientes · …" (derivado do `via` de cada cliente). O nome fica sempre em tipografia, mesmo com logo.
+**Card de cliente** — `radius-lg`, `surface`, borda `hairline`, sem clique: logo (40px, `ink`) ou ícone do setor, nome em `h3`, setor em small muted, o que foi feito
+em small e "via <empresa>" em caption `accent` quando `via` estiver preenchido.
 
 **Chip de stack** — `accent-soft` fundo, texto `ink`, `radius-sm`, 36px. **Contador** — display `stat`, sobe de 0 em 1.2s uma vez; sufixo (" mil+") a 0,5em na mesma linha.
 
@@ -234,8 +237,9 @@ interativo, o fundo é o mundo 3D. **Rodapé** — caption muted.
 
 ## 8. Imagens e mundo 3D
 
-Jogos em `public/images/` (WebP + SVG), alt descritivo, `loading="lazy"`, dimensões declaradas. Logos de empresas em
-`public/images/empresas/*.svg` quando disponíveis. Texturas 3D em `public/textures/` (WebP). Ícones Lucide; LinkedIn inline.
+Jogos em `public/images/` (WebP + SVG), alt descritivo, `loading="lazy"`, dimensões declaradas. Logos de empresas e clientes em
+`public/images/empresas/<id>` (SVG, ou PNG com transparência), monocromáticos (todo branco, vazados de verdade, recortados no conteúdo): entram como
+máscara CSS e são pintados com os tokens, então nunca aparecem nas cores da marca. `ratio` (largura/altura) vai em `companies.js`. Texturas 3D em `public/textures/` (WebP). Ícones Lucide; LinkedIn inline.
 
 **Um mundo, uma câmera.** Um canvas R3F fixo atrás da página inteira (`-z-10`, sem eventos próprios); os eventos vêm do `#root`
 (`eventPrefix="client"`) e cada interação 3D só aceita ponteiro que nasce na sua zona DOM (`data-world-zone`). O scroll é a câmera.

@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { motion, useAnimationFrame, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform, useVelocity } from 'motion/react'
 import { modes } from '../data/profile.js'
-import { companies } from '../data/companies.js'
+import { clients, employers } from '../data/companies.js'
 import { useMode } from '../mode/ModeContext.jsx'
 
 const wrap = (min, max, v) => {
@@ -11,12 +11,12 @@ const wrap = (min, max, v) => {
 
 /**
  * Faixa entre o hero e os trabalhos. Corre sozinha e acelera (ou inverte) com a velocidade do scroll;
- * pausa no hover. Stack no modo Jogos, empresas no Fullstack. Estática com reduced motion.
+ * pausa no hover. Stack no modo Jogos; no Fullstack, as empresas e depois os clientes. Estática com reduced motion.
  */
 export function Marquee() {
   const { mode } = useMode()
   const reduced = useReducedMotion()
-  const items = mode === 'games' ? modes.games.stack : companies.map((c) => c.fullName)
+  const items = mode === 'games' ? modes.games.stack : [...employers.map((e) => e.name), ...clients.map((c) => c.fullName)]
   const row = [...items, ...items]
 
   const baseX = useMotionValue(0)

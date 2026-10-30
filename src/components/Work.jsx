@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { studios } from '../data/projects.js'
-import { companies } from '../data/companies.js'
+import { clients, employers } from '../data/companies.js'
 import { useMode } from '../mode/ModeContext.jsx'
 import { Container } from './ui/Container.jsx'
 import { Button } from './ui/Button.jsx'
@@ -13,15 +13,6 @@ import { Reveal, RevealItem, revealChild } from './effects/Reveal.jsx'
 import { GhostTitle } from './effects/GhostTitle.jsx'
 import { ScrubReveal } from './effects/ScrubReveal.jsx'
 import { SectionField } from './effects/SectionField.jsx'
-
-const SECTOR_ICON = {
-  'Ensino público federal': 'graduation-cap',
-  'Apoio a pequenos negócios': 'briefcase',
-  'Educação profissional': 'graduation-cap',
-  Saúde: 'heart-pulse',
-  'Tecnologia e formação': 'cpu',
-  Finanças: 'landmark',
-}
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -285,11 +276,27 @@ function StackedGames() {
   )
 }
 
-/** Card de empresa: vira no clique (ou Enter/Espaço) mostrando o que foi feito, período e stack. */
-function CompanyCard({ company }) {
+/**
+ * Logo da empresa como máscara CSS: o SVG só dá a forma, a cor vem do tema (`bg-*` em `className`), então todos ficam
+ * no mesmo tom e acompanham o modo. Decorativo: o nome está sempre escrito ao lado.
+ */
+function Logo({ logo, className = '' }) {
+  const mask = `url(${logo.src})`
+  return (
+    <span
+      aria-hidden="true"
+      className={`block min-w-0 [mask-position:left_center] [mask-repeat:no-repeat] [mask-size:contain] ${className}`}
+      style={{ aspectRatio: logo.ratio, maskImage: mask, WebkitMaskImage: mask }}
+    />
+  )
+}
+
+/** Card de empresa: vira no clique (ou Enter/Espaço) mostrando o que foi feito, a stack e os clientes atendidos por ela. */
+function EmployerCard({ employer }) {
   const [flipped, setFlipped] = useState(false)
   const reduced = useReducedMotion()
-  const titleId = `work-${company.id}`
+  const titleId = `work-${employer.id}`
+  const served = clients.filter((client) => client.via.includes(employer.id))
   const face = 'absolute inset-0 flex flex-col justify-between rounded-lg border border-hairline bg-surface p-5 md:p-6 [backface-visibility:hidden]'
   return (
     <TiltCard as={motion.li} variants={revealChild} max={6} className="list-none">
@@ -310,22 +317,23 @@ function CompanyCard({ company }) {
           <div className={`${face} transition-[border-color,box-shadow] duration-(--duration-base) group-hover:border-accent/40 group-hover:shadow-glow`}>
             <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-lg opacity-0 transition-opacity duration-(--duration-base) glow-follow group-hover:opacity-100" />
             <div className="relative flex items-start justify-between gap-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-md bg-accent-soft text-accent mode-transition">
-                <Icon name={SECTOR_ICON[company.sector] || 'building'} size={20} />
-              </span>
-              <span className="text-caption uppercase text-muted">{company.role}</span>
+              {employer.logo ? (
+                // até 160px de largura: logos compridos (NeoCode, Bugaboo) ficam mais baixos, e não mais pesados que os outros
+                <Logo logo={employer.logo} className="h-11 max-w-40 bg-ink mode-transition group-hover:bg-accent" />
+              ) : (
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-md bg-accent-soft text-accent mode-transition">
+                  <Icon name={employer.icon} size={20} />
+                </span>
+              )}
+              <span className="shrink-0 text-caption uppercase tabular-nums text-muted">{employer.period}</span>
             </div>
             <div className="relative">
-              {company.logo ? (
-                <img src={company.logo} alt={`Logo ${company.fullName}`} className="h-10 w-auto" loading="lazy" />
-              ) : (
-                <h3 id={titleId} className="font-display text-[clamp(1.5rem,1.2rem+1.4vw,2.25rem)] font-semibold leading-none tracking-[-0.02em] text-ink">
-                  {company.name}
-                </h3>
-              )}
+              <h3 id={titleId} translate="no" className="font-display text-[clamp(1.5rem,1.2rem+1.4vw,2.25rem)] font-semibold leading-none tracking-[-0.02em] text-ink">
+                {employer.name}
+              </h3>
               <p className="mt-2 flex items-center justify-between gap-3 text-small text-muted">
-                {company.sector}
-                <span className="inline-flex items-center gap-1 text-caption uppercase text-accent opacity-0 transition-opacity duration-(--duration-base) group-hover:opacity-100 mode-transition">
+                {employer.role}
+                <span className="inline-flex shrink-0 items-center gap-1 text-caption uppercase text-accent opacity-0 transition-opacity duration-(--duration-base) group-hover:opacity-100 mode-transition">
                   ver mais <Icon name="arrow-up-right" size={14} />
                 </span>
               </p>
@@ -334,23 +342,80 @@ function CompanyCard({ company }) {
           {/* verso */}
           <div id={`${titleId}-back`} className={`${face} border-accent/40 bg-surface-elevated [transform:rotateY(180deg)]`}>
             <div className="flex items-start justify-between gap-3">
-              <span className="font-display text-h3 text-ink">{company.name}</span>
-              {company.period && <span className="text-caption uppercase text-muted">{company.period}</span>}
+              <span translate="no" className="font-display text-h3 text-ink">
+                {employer.name}
+              </span>
+              <span className="shrink-0 text-caption uppercase tabular-nums text-muted">{employer.period}</span>
             </div>
             <div>
-              <p className="text-body text-body">{company.description}</p>
+              <p className="text-body text-body">{employer.description}</p>
               <ul className="mt-4 flex flex-wrap gap-2">
-                {company.stack.map((item) => (
+                {employer.stack.map((item) => (
                   <li key={item} className="rounded-sm bg-accent-soft px-2.5 py-1 text-small text-ink mode-transition">
                     {item}
                   </li>
                 ))}
               </ul>
+              {served.length > 0 && (
+                <p className="mt-3 text-caption uppercase text-accent mode-transition">
+                  <span className="text-muted">Clientes ·</span> {served.map((client) => client.name).join(' · ')}
+                </p>
+              )}
             </div>
           </div>
         </motion.div>
       </button>
     </TiltCard>
+  )
+}
+
+/** Cliente atendido por meio de uma das empresas; "via" aparece quando a empresa está preenchida nos dados. */
+function ClientCard({ client, viaLabel }) {
+  const via = employers.filter((employer) => client.via.includes(employer.id)).map((employer) => employer.name)
+  return (
+    <motion.li variants={revealChild} className="flex list-none flex-col gap-4 rounded-lg border border-hairline bg-surface p-4 md:p-5">
+      {client.logo ? (
+        <Logo logo={client.logo} className="h-10 max-w-full self-start bg-ink" />
+      ) : (
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-accent-soft text-accent mode-transition">
+          <Icon name={client.icon} size={18} />
+        </span>
+      )}
+      <div>
+        <h4 translate="no" className="text-balance font-display text-h3 text-ink">
+          {client.name}
+        </h4>
+        <p className="mt-1 text-small text-muted">{client.sector}</p>
+      </div>
+      <p className="text-small text-body">{client.description}</p>
+      {via.length > 0 && (
+        <p translate="no" className="mt-auto text-caption uppercase text-accent mode-transition">
+          {viaLabel} {via.join(' · ')}
+        </p>
+      )}
+    </motion.li>
+  )
+}
+
+/** Segundo nível do Fullstack: os clientes dos projetos feitos dentro das empresas acima. */
+function Clients({ data }) {
+  return (
+    <Reveal amount={0.2} className="mt-16 md:mt-24">
+      {/* nota logo abaixo do título e em `body`: à direita, em `muted`, sumia sobre os racks acesos do fundo 3D */}
+      <header className="mb-8 flex flex-col gap-2">
+        <RevealItem as={motion.h3} className="font-display text-h3 text-ink">
+          {data.clientsTitle}
+        </RevealItem>
+        <RevealItem as={motion.p} className="text-small text-body">
+          {data.clientsNote}
+        </RevealItem>
+      </header>
+      <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 xl:grid-cols-5">
+        {clients.map((client) => (
+          <ClientCard key={client.id} client={client} viaLabel={data.clientsVia} />
+        ))}
+      </ul>
+    </Reveal>
   )
 }
 
@@ -392,12 +457,13 @@ export function Work() {
                 </>
               ) : (
                 <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:gap-6 xl:grid-cols-3">
-                  {companies.map((company) => (
-                    <CompanyCard key={company.id} company={company} />
+                  {employers.map((employer) => (
+                    <EmployerCard key={employer.id} employer={employer} />
                   ))}
                 </ul>
               )}
             </Reveal>
+            {!isGames && <Clients data={data} />}
           </motion.div>
         </AnimatePresence>
       </Container>

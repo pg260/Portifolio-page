@@ -55,7 +55,7 @@ export function PhysicsChips({ items, label, float = false }) {
         Bodies.rectangle(-T / 2, H / 2 - H, T, H * 4, wall),
         Bodies.rectangle(W + T / 2, H / 2 - H, T, H * 4, wall),
       ])
-      // Teto na borda da caixa, adicionado 1,4s depois que o motor começa a rodar (ver efeito de inView)
+      // Teto na borda da caixa, adicionado quando todos os chips já caíram para dentro dela (ver sync)
       addCeiling = () => Composite.add(engine.world, Bodies.rectangle(W / 2, -T / 2, W + 400, T, wall))
     }
 
@@ -158,6 +158,11 @@ export function PhysicsChips({ items, label, float = false }) {
         if (!c) return
         c.style.transform = `translate(${b.position.x - c.offsetWidth / 2}px, ${b.position.y - c.offsetHeight / 2}px) rotate(${b.angle}rad)`
       })
+      // com todos dentro, o teto fecha a caixa e o "Sacudir" não joga nenhum para fora
+      if (addCeiling && bodies.every((b) => b.bounds.min.y > 0)) {
+        addCeiling()
+        addCeiling = null
+      }
       const now = Query.collides(probe, bodies).length > 0
       if (now !== covered) {
         covered = now
@@ -174,10 +179,9 @@ export function PhysicsChips({ items, label, float = false }) {
     Events.on(engine, 'afterUpdate', sync)
     sync()
     const runner = Runner.create()
-    world.current = { engine, runner, bodies, running: false, addCeiling, ceilingTimer: null }
+    world.current = { engine, runner, bodies, running: false }
 
     return () => {
-      clearTimeout(world.current?.ceilingTimer)
       Runner.stop(runner)
       Events.off(engine, 'beforeUpdate', drift)
       Events.off(engine, 'afterUpdate', sync)
@@ -203,11 +207,6 @@ export function PhysicsChips({ items, label, float = false }) {
     if (inView && !w.running) {
       Runner.run(w.runner, w.engine)
       w.running = true
-      if (w.addCeiling) {
-        const add = w.addCeiling
-        w.addCeiling = null
-        w.ceilingTimer = setTimeout(add, 1400)
-      }
     } else if (!inView && w.running) {
       Runner.stop(w.runner)
       w.running = false
@@ -253,7 +252,7 @@ export function PhysicsChips({ items, label, float = false }) {
         ref={box}
         role="group"
         aria-label={label}
-        className="relative h-[280px] overflow-hidden rounded-lg border border-hairline bg-surface/50 [touch-action:pan-y] md:h-[320px]"
+        className="relative h-[300px] overflow-hidden rounded-lg border border-hairline bg-surface/50 [touch-action:pan-y] md:h-[320px]"
       >
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 glow-follow opacity-40" />
         <ul className="contents">
