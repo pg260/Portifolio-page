@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Cópia gerada por `npm run ai-kit:install` (fonte: ai-kit/skills)
+.claude/
+.mcp.json
