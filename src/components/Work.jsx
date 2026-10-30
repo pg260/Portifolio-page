@@ -291,7 +291,11 @@ function Logo({ logo, className = '' }) {
   )
 }
 
-/** Card de empresa: vira no clique (ou Enter/Espaço) mostrando o que foi feito, a stack e os clientes atendidos por ela. */
+/**
+ * Card de empresa: vira no clique (ou Enter/Espaço) mostrando o que foi feito, a stack e os clientes atendidos por ela.
+ * O botão é uma camada transparente por cima das faces, para o título continuar sendo um h3 de verdade (botão só aceita
+ * texto simples dentro).
+ */
 function EmployerCard({ employer }) {
   const [flipped, setFlipped] = useState(false)
   const reduced = useReducedMotion()
@@ -300,14 +304,7 @@ function EmployerCard({ employer }) {
   const face = 'absolute inset-0 flex flex-col justify-between rounded-lg border border-hairline bg-surface p-5 md:p-6 [backface-visibility:hidden]'
   return (
     <TiltCard as={motion.li} variants={revealChild} max={6} className="list-none">
-      <button
-        type="button"
-        aria-pressed={flipped}
-        aria-labelledby={titleId}
-        aria-describedby={`${titleId}-back`}
-        onClick={() => setFlipped((v) => !v)}
-        className="group/flip relative block aspect-[4/3] w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus-ring [perspective:1400px]"
-      >
+      <div className="group/flip relative aspect-[4/3] w-full [perspective:1400px]">
         <motion.div
           animate={{ rotateY: flipped ? 180 : 0 }}
           transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 160, damping: 20 }}
@@ -333,7 +330,8 @@ function EmployerCard({ employer }) {
               </h3>
               <p className="mt-2 flex items-center justify-between gap-3 text-small text-muted">
                 {employer.role}
-                <span className="inline-flex shrink-0 items-center gap-1 text-caption uppercase text-accent opacity-0 transition-opacity duration-(--duration-base) group-hover:opacity-100 mode-transition">
+                {/* sem hover (celular), a dica fica sempre à mostra; no teclado, aparece com o foco */}
+                <span className="inline-flex shrink-0 items-center gap-1 text-caption uppercase text-accent opacity-0 transition-opacity duration-(--duration-base) group-hover:opacity-100 group-has-focus-visible/flip:opacity-100 [@media(hover:none)]:opacity-100 mode-transition">
                   ver mais <Icon name="arrow-up-right" size={14} />
                 </span>
               </p>
@@ -364,7 +362,15 @@ function EmployerCard({ employer }) {
             </div>
           </div>
         </motion.div>
-      </button>
+        <button
+          type="button"
+          aria-pressed={flipped}
+          aria-labelledby={titleId}
+          aria-describedby={`${titleId}-back`}
+          onClick={() => setFlipped((v) => !v)}
+          className="absolute inset-0 z-10 cursor-pointer rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus-ring"
+        />
+      </div>
     </TiltCard>
   )
 }

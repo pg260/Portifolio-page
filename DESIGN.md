@@ -157,7 +157,8 @@ por cima. **Fundo de Trabalhos:** canvas 2D com estrelas que fogem do cursor
 (Jogos) ou rede de nós atraídos pelo cursor (Fullstack). **Cards de jogo:** cópia da imagem fatiada em glitch (500ms, steps) e
 varredura de scanline no hover. **Rastro do cursor:** partículas na cor do modo (canvas 2D, `screen`).
 
-**Cards de empresa:** viram no clique/Enter (rotateY 180°, spring 160/20) mostrando descrição, stack e os clientes atendidos por ela; "ver mais" aparece no hover.
+**Cards de empresa:** viram no clique/Enter (rotateY 180°, spring 160/20) mostrando descrição, stack e os clientes atendidos por ela; "ver mais" aparece no hover e no foco do teclado,
+e fica sempre visível em telas sem hover (celular).
 **Chips de stack:** sobem 3px e escalam 1,04 no hover. **Brand na nav:** scramble de 420ms no hover e ao trocar de modo.
 **Rodapé:** "voltar ao topo" com texto circular girando (18s, linear) e seta magnética.
 
