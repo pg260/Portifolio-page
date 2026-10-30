@@ -21,7 +21,7 @@ export const studios = [
         image: { webp: '/images/fossil-vivo.webp', fallback: '/images/fossil-vivo.svg', width: 1080, height: 1350 },
         alt: 'Pôster da exposição Fóssil Vivo: crânio fossilizado sobre fundo azul-petróleo com recifes',
         description:
-          'Experiência imersiva de realidade virtual e aumentada criada para a exposição do Museu Goeldi, que traz a Amazônia pré-histórica à vida.',
+          'Realidade virtual e aumentada para uma exposição do Museu Goeldi, em Belém, que mostra de perto como era a Amazônia pré-histórica.',
         links: [
           {
             label: 'Ver notícia',
@@ -37,7 +37,7 @@ export const studios = [
         image: { webp: '/images/mundo-iel.webp', fallback: '/images/mundo-iel.svg', width: 240, height: 240 },
         alt: 'Ícone do jogo Mundo IEL: letras brancas sobre fundo azul-claro',
         description:
-          'Jogo educacional para celular publicado na Google Play e na App Store. Desafios e aprendizado num universo gamificado para o IEL.',
+          'Jogo educativo para celular feito para o IEL (Instituto Euvaldo Lodi), publicado na Google Play e na App Store.',
         links: [
           { label: 'Google Play', url: 'https://play.google.com/store/apps/details?id=com.IEL.MundoIEL&hl=pt_BR', icon: 'play' },
           { label: 'App Store', url: 'https://apps.apple.com/br/app/mundo-iel/id6471497859', icon: 'apple' },
@@ -49,7 +49,7 @@ export const studios = [
         category: 'App comercial',
         image: { webp: '/images/nesher.webp', fallback: '/images/nesher.svg', width: 240, height: 240 },
         alt: 'Ícone do IA Nesher Projetta: letra n amarela sobre fundo grafite',
-        description: 'App de visualização e configuração de produtos em tempo real, publicado na Google Play e na App Store.',
+        description: 'App em que o cliente configura o produto e vê o resultado em tempo real. Está na Google Play e na App Store.',
         links: [
           play('com.BugabooStudio.ConfiguradorNesher'),
           { label: 'App Store', url: 'https://apps.apple.com/br/app/configurador-nesher/id6746758821', icon: 'apple' },

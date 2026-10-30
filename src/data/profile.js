@@ -12,8 +12,8 @@ export const profile = {
   name: 'Pedro Gustavo',
   years: 4,
   about: [
-    `Jogos sempre foram minha paixão e a Unity, minha ferramenta para dar vida a eles. Como fundador e líder técnico da ${links.studioLabel}, transformo conceitos em experiências jogáveis que combinam mecânicas envolventes com código limpo e otimizado.`,
-    'No fullstack, construo sistemas web que empresas usam todos os dias: do banco de dados à interface, passando por APIs, integrações e deploy. Já entreguei para instituições de ensino, saúde, apoio a negócios e finanças em Fortaleza.',
+    `Moro em Fortaleza e trabalho com Unity há 4 anos. Já fiz um jogo infantil que passou de 100 mil downloads, a realidade virtual e aumentada de uma exposição do Museu Goeldi e um app para configurar produtos em tempo real. Também fundei a ${links.studioLabel}, onde cuido da parte técnica.`,
+    'Na web, sou fullstack. Hoje programo em Java, Angular e React na Poncetech e já passei por Node.js e .NET, sempre do banco de dados até a tela. Pelas empresas em que trabalhei, entreguei projetos para Sebrae, Senai, Unimed Fortaleza, CVT e m7. Em paralelo, curso Ciência da Computação no IFCE.',
   ],
 }
 
@@ -33,6 +33,7 @@ export const modes = {
     lead: `Desenvolvedor Unity há 4 anos. Mobile, multiplayer com Photon e experiências VR/AR. Fundador da ${links.studioLabel}.`,
     cta: { label: 'Ver jogos', href: '#trabalhos' },
     ctaSecondary: { label: links.studioLabel, href: links.studio, icon: 'arrow-up-right' },
+    contactTitle: 'Vamos explorar o universo de oportunidades!',
     workTitle: 'Jogos e experiências',
     workSummary: '3 estúdios · 8 projetos · 170 mil+ downloads',
     stack: ['Unity 2D/3D', 'C#', 'Photon', 'Android', 'iOS', 'VR/AR', 'Shader Graph', 'Addressables'],
@@ -173,6 +174,7 @@ export const modes = {
     lead: 'Desenvolvedor fullstack em Java, Angular, React, Node.js e .NET, hoje na Poncetech. Já entreguei projetos para Sebrae, Senai, Unimed, CVT e m7.',
     cta: { label: 'Ver empresas', href: '#trabalhos' },
     ctaSecondary: { label: 'LinkedIn', href: links.linkedin, icon: 'linkedin' },
+    contactTitle: 'Vamos construir algo?',
     workTitle: 'Empresas em que trabalhei',
     workSummary: '6 empresas · projetos para 5 clientes',
     clientsTitle: 'Clientes atendidos',
@@ -185,10 +187,6 @@ export const modes = {
       { value: 4, label: 'anos programando' },
     ],
   },
-}
-
-export const contact = {
-  title: 'Vamos construir algo?',
 }
 
 export const nav = [

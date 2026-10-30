@@ -657,8 +657,9 @@ export function Cosmos({ active, reduced, narrow, galaxyCount }) {
       giant: { position: at(1, [-0.72, -0.32], 40), radius: 8 * Math.max(0.42, fit) },
       star: { position: at(2, [0.58, 0.52], 40), radius: 2.2 * Math.max(0.6, fit) },
       cloud: { position: at(2.45, [0, 0.12], 6) },
-      // à direita: no fim da página o texto do Contato sobe e ocupa o alto da metade esquerda
-      galaxy: { position: at(3, [0.5, 0.3], 110), radius: 30 * Math.max(0.45, fit) },
+      // à direita: no fim da página o texto do Contato sobe e ocupa o alto da metade esquerda; no celular em pé o
+      // título ocupa a largura toda em três linhas, então a galáxia sobe para o vão entre a nav e o título
+      galaxy: { position: at(3, aspect < 0.7 ? [0.42, 0.64] : [0.5, 0.3], 110), radius: 30 * Math.max(0.45, fit) },
     }
   }, [narrow, width, height, fov])
   const root = useRef()

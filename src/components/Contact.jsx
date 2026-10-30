@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
-import { contact, links } from '../data/profile.js'
+import { links } from '../data/profile.js'
+import { useMode } from '../mode/ModeContext.jsx'
 import { Container } from './ui/Container.jsx'
 import { Button } from './ui/Button.jsx'
 import { Magnetic } from './effects/Magnetic.jsx'
@@ -7,8 +8,9 @@ import { Reveal, RevealItem } from './effects/Reveal.jsx'
 import { GhostTitle } from './effects/GhostTitle.jsx'
 import { ScrubReveal } from './effects/ScrubReveal.jsx'
 
-/** Contato: sem interação própria; o fundo é o mundo 3D (no modo Jogos, a galáxia à direita). */
+/** Contato: sem interação própria; o fundo é o mundo 3D (no modo Jogos, a galáxia à direita). O título muda com o modo. */
 export function Contact() {
+  const { data } = useMode()
   return (
     <section id="contato" aria-labelledby="contato-title" className="relative overflow-hidden py-24 md:py-32 lg:py-44">
       <GhostTitle text="Contato" />
@@ -16,7 +18,7 @@ export function Contact() {
       <Container className="relative">
         <Reveal amount={0.3} className="flex flex-col gap-6 md:gap-8">
           <ScrubReveal id="contato-title" className="text-h2">
-            {contact.title}
+            {data.contactTitle}
           </ScrubReveal>
           <RevealItem className="w-fit">
             <Magnetic strength={4}>
